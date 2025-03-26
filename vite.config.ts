@@ -1,50 +1,45 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import tailwindcss from 'tailwindcss'
-import autoprefixer from 'autoprefixer'
 
-// https://vitejs.dev/config/
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
 export default defineConfig({
   plugins: [react()],
-  css: {
-    postcss: {
-      plugins: [
-        tailwindcss,
-        autoprefixer,
-      ],
-    }
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
   server: {
-    port: 3000,
-    strictPort: true,
-    host: true,
-    cors: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
+    middleware: {
+      // Handle API requests
+      '/src/api/chat': async (req, res, next) => {
+        if (req.method === 'POST') {
+          try {
+            const { POST } = await import('./src/api/chat');
+            const response = await POST(req);
+            
+            // Set headers from the response
+            response.headers.forEach((value, key) => {
+              res.setHeader(key, value);
+            });
+            
+            // Set status code
+            res.statusCode = response.status;
+            
+            // Stream the response
+            const reader = response.body?.getReader();
+            if (reader) {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                res.write(value);
+              }
+              res.end();
+            }
+          } catch (error) {
+            console.error('API Error:', error);
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: 'Internal Server Error' }));
+          }
+        } else {
+          next();
+        }
+      },
     },
-    watch: {
-      usePolling: true,
-    },
-    hmr: {
-      protocol: 'wss',
-      clientPort: 443,
-      timeout: 120000
-    },
-    allowedHosts: ['.blink.new']
   },
-  preview: {
-    port: 3000,
-    strictPort: true,
-    host: true,
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-  }
-})
+});

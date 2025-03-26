@@ -6,7 +6,7 @@ import './App.css';
 
 function App() {
   const { messages, input, handleInputChange, handleSubmit, isLoading, reload } = useChat({
-    api: '/api/chat',
+    api: '/src/api/chat',
   });
 
   return (
