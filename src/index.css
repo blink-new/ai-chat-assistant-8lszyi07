@@ -7,27 +7,39 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
 }
 
-/* Markdown Styles */
 .prose pre {
-  background-color: #f3f4f6;
-  padding: 0.75rem;
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
 }
 
 .prose code {
-  color: #ef4444;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
   font-size: 0.875em;
 }
 
-.prose p {
-  margin: 0;
+.dark .prose code {
+  background-color: rgba(255, 255, 255, 0.1);
 }
